@@ -4,6 +4,7 @@
 #include <chrono>
 float lastFrameTime = 0, deltaTime = 0;
 float timeAccumulator = 0.0f;
+float deltamultiplier = 100.0f;
 
 // Vertex Shader source
 const char* vertexShaderSource = R"(
@@ -110,10 +111,13 @@ int main() {
 
         float currentFrameTime = static_cast<float>(glfwGetTime());
         deltaTime = currentFrameTime - lastFrameTime;
-        if (timeAccumulator >= 0.033f) { //run if after .16 second
+        if (timeAccumulator >= 0.016f) { //run if after .16 second
             lastFrameTime = currentFrameTime;
             timeAccumulator = 0.0f; //reset time
         }
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_5) == GLFW_PRESS) { deltamultiplier += 0.5f; } // zoom out
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_4) == GLFW_PRESS) { deltamultiplier -= 0.5f; } // zoom in
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) { deltamultiplier = 100.0f; } // zoom in
 
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgram);
@@ -122,7 +126,7 @@ int main() {
         glfwGetFramebufferSize(window, &width, &height);
         glUniform2f(glGetUniformLocation(shaderProgram, "resolution"), (float)width, (float)height);
 
-        glUniform1f(glGetUniformLocation(shaderProgram, "time"), deltaTime * 500);
+        glUniform1f(glGetUniformLocation(shaderProgram, "time"), deltaTime * deltamultiplier);
         glUniform1f(glGetUniformLocation(shaderProgram, "scale"), 1.0f);
         glUniform1f(glGetUniformLocation(shaderProgram, "zoom"), 1.0f);
 

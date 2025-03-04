@@ -20,4 +20,4 @@ glfw3.lib(vulkan.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(vu
 glfw3.lib(wgl_context.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(wgl_context.obj)' or at ''; linking object as if no debug info
 glfw3.lib(egl_context.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(egl_context.obj)' or at ''; linking object as if no debug info
 glfw3.lib(osmesa_context.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(osmesa_context.obj)' or at ''; linking object as if no debug info
-  TrippyBallz.vcxproj -> C:\Users\anon\Downloads\YoutubeOpenGL 5 - Shaders\x64\Release\trippyballs.exe
+  TrippyBallz.vcxproj -> C:\Users\anon\Downloads\CPP\x64\Release\trippyballs.exe
