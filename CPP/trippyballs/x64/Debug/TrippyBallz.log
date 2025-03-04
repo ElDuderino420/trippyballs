@@ -1,0 +1,8 @@
+﻿  Main.cpp
+C:\Users\anon\Downloads\YoutubeOpenGL 5 - Shaders\Main.cpp(119,16): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+glfw3.lib(input.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(input.obj)' or at ''; linking object as if no debug info
+glfw3.lib(monitor.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(monitor.obj)' or at ''; linking object as if no debug info
+glfw3.lib(window.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(window.obj)' or at ''; linking object as if no debug info
+glfw3.lib(win32_joystick.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(win32_joystick.obj)' or at ''; linking object as if no debug info
+glfw3.lib(win32_window.obj) : warning LNK4099: PDB '' was not found with 'glfw3.lib(win32_window.obj)' or at ''; linking object as if no debug info
+  TrippyBallz.vcxproj -> C:\Users\anon\Downloads\YoutubeOpenGL 5 - Shaders\x64\Debug\trippyballs.exe

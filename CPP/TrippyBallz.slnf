@@ -1,0 +1,8 @@
+{
+  "solution": {
+    "path": "trippyballs.sln",
+    "projects": [
+      "YoutubeOpenGL.vcxproj"
+    ]
+  }
+}
