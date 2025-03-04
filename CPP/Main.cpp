@@ -2,9 +2,9 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <chrono>
-float lastFrameTime = 0, deltaTime = 0;
-float timeAccumulator = 0.0f;
-float deltamultiplier = 100.0f;
+
+float lastFrameTime = 0, deltaTime = 0, timeAccumulator[2] = { 0.0f, 0.0f }, deltamultiplier = 100.0f, temp = 1.0f;
+bool toggle = true;
 
 // Vertex Shader source
 const char* vertexShaderSource = R"(
@@ -28,28 +28,17 @@ void main(void) {
 })";
 
 // Resize callback function
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) { glViewport(0, 0, width, height); }
 
 int main() {
-    if (!glfwInit()) {
-        std::cerr << "Failed to initialize GLFW" << std::endl;
-        return -1;
-    }
+    if (!glfwInit()) { std::cerr << "Failed to initialize GLFW" << std::endl; return -1; }
 
-    GLFWwindow* window = glfwCreateWindow(1920, 1080, "OpenGL Shader Update", NULL, NULL);
-    if (!window) {
-        std::cerr << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
+    GLFWwindow* window = glfwCreateWindow(1920, 1080, "OpenGL Weird Shader", NULL, NULL);
+
+    if (!window) { std::cerr << "Failed to create GLFW window" << std::endl; glfwTerminate(); return -1; }
     glfwMakeContextCurrent(window);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cerr << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) { std::cerr << "Failed to initialize GLAD" << std::endl; return -1; }
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
@@ -60,31 +49,20 @@ int main() {
     int success;
     char infoLog[512];
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cerr << "Vertex Shader Compilation Error:\n" << infoLog << std::endl;
-    }
+    if (!success) { glGetShaderInfoLog(vertexShader, 512, NULL, infoLog); std::cerr << "Vertex Shader Compilation Error:\n" << infoLog << std::endl; }
 
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
     glCompileShader(fragmentShader);
 
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cerr << "Fragment Shader Compilation Error:\n" << infoLog << std::endl;
-    }
 
-    GLuint shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
+    if (!success) { glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog); std::cerr << "Fragment Shader Compilation Error:\n" << infoLog << std::endl; }
+
+    GLuint shaderProgram = glCreateProgram(); glAttachShader(shaderProgram, vertexShader); glAttachShader(shaderProgram, fragmentShader); glLinkProgram(shaderProgram);
 
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cerr << "Shader Program Linking Error:\n" << infoLog << std::endl;
-    }
+    if (!success) { glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog); std::cerr << "Shader Program Linking Error:\n" << infoLog << std::endl; }
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
@@ -106,28 +84,51 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-
+	glfwSwapInterval(1); // vsync
     while (!glfwWindowShouldClose(window)) {
 
         float currentFrameTime = static_cast<float>(glfwGetTime());
         deltaTime = currentFrameTime - lastFrameTime;
-        if (timeAccumulator >= 0.016f) { //run if after .16 second
-            lastFrameTime = currentFrameTime;
-            timeAccumulator = 0.0f; //reset time
-        }
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_5) == GLFW_PRESS) { deltamultiplier += 0.5f; } // zoom out
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_4) == GLFW_PRESS) { deltamultiplier -= 0.5f; } // zoom in
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) { deltamultiplier = 100.0f; } // zoom in
+		lastFrameTime = currentFrameTime;
 
+            timeAccumulator[0] += deltaTime;
+			timeAccumulator[1] += deltaTime;
+
+            if (timeAccumulator[0] >= 0.016f) { //run if after 1 second (1hz)
+                if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_5) == GLFW_PRESS) { deltamultiplier += 1.0f; } // zoom out
+                if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_4) == GLFW_PRESS) { deltamultiplier -= 1.0f; } // zoom in
+                if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) { deltamultiplier = 100.0f; } // zoom in
+                switch (toggle) {
+                case true:
+                    if (temp <= 1.0f) {
+                        temp -= 0.005f;
+                        //	std::cout << temp << std::endl;
+                    }
+                    if (temp <= -1.0f) {
+                        temp = 1.0f;
+                    }
+                    break;
+                case false:
+                    temp = 1.0f;
+                    break;
+                }
+
+                    timeAccumulator[0] = 0.0f; //reset time
+            } // zoom in
+        if (timeAccumulator[1] >= 0.16f) { //run if after 1 second (1hz)
+            if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) { switch (toggle) { case true: toggle = false; break; case false: toggle = true; break; } std::cout << "Toggle: " << toggle << std::endl; }
+            timeAccumulator[1] = 0.0f; //reset time
+
+        } // zoom in
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgram);
 
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
-        glUniform2f(glGetUniformLocation(shaderProgram, "resolution"), (float)width, (float)height);
 
-        glUniform1f(glGetUniformLocation(shaderProgram, "time"), deltaTime * deltamultiplier);
-        glUniform1f(glGetUniformLocation(shaderProgram, "scale"), 1.0f);
+        glUniform2f(glGetUniformLocation(shaderProgram, "resolution"), (float)width, (float)height);
+        glUniform1f(glGetUniformLocation(shaderProgram, "time"), currentFrameTime * deltamultiplier);
+        glUniform1f(glGetUniformLocation(shaderProgram, "scale"), temp);
         glUniform1f(glGetUniformLocation(shaderProgram, "zoom"), 1.0f);
 
         glBindVertexArray(VAO);
