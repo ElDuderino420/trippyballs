@@ -1,4 +1,4 @@
-Controls (CPP VERSION):
+Controls:
 
 Mouse Side Buttons: increase/decrease speed
 
